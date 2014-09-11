@@ -1,0 +1,7 @@
+c:\users\anubis\documents\visual studio 2010\Projects\SerialPortDotNET\SerialPortDotNET\bin\Debug\SerialPortDotNET.exe
+c:\users\anubis\documents\visual studio 2010\Projects\SerialPortDotNET\SerialPortDotNET\bin\Debug\SerialPortDotNET.pdb
+c:\users\anubis\documents\visual studio 2010\Projects\SerialPortDotNET\SerialPortDotNET\obj\x86\Debug\SerialPortDotNET.Form1.resources
+c:\users\anubis\documents\visual studio 2010\Projects\SerialPortDotNET\SerialPortDotNET\obj\x86\Debug\SerialPortDotNET.Properties.Resources.resources
+c:\users\anubis\documents\visual studio 2010\Projects\SerialPortDotNET\SerialPortDotNET\obj\x86\Debug\SerialPortDotNET.csproj.GenerateResource.Cache
+c:\users\anubis\documents\visual studio 2010\Projects\SerialPortDotNET\SerialPortDotNET\obj\x86\Debug\SerialPortDotNET.exe
+c:\users\anubis\documents\visual studio 2010\Projects\SerialPortDotNET\SerialPortDotNET\obj\x86\Debug\SerialPortDotNET.pdb
