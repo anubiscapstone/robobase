@@ -12,3 +12,4 @@ C:\Users\ANUBIS\Desktop\Anubis Project\Git Repo\robobase\SerialPortDotNET\Serial
 C:\Users\ANUBIS\Desktop\Anubis Project\Git Repo\robobase\SerialPortDotNET\SerialPortDotNET\obj\x86\Debug\SerialPortDotNET.Form1.resources
 C:\Users\ANUBIS\Desktop\Anubis Project\Git Repo\robobase\SerialPortDotNET\SerialPortDotNET\obj\x86\Debug\SerialPortDotNET.Properties.Resources.resources
 C:\Users\ANUBIS\Desktop\Anubis Project\Git Repo\robobase\SerialPortDotNET\SerialPortDotNET\obj\x86\Debug\SerialPortDotNET.csproj.GenerateResource.Cache
+C:\Users\ANUBIS\Desktop\Anubis Project\Git Repo\robobase\SerialPortDotNET\SerialPortDotNET\obj\x86\Debug\SerialPortDotNET.csprojResolveAssemblyReference.cache
