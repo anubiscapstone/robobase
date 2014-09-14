@@ -88,18 +88,23 @@ namespace SerialPortDotNET
 
             if (skeletons.Length != 0)
             {
-                foreach (Skeleton skel in skeletons)
-                {
-                    if (skel.TrackingState == SkeletonTrackingState.Tracked)
+                    if (skeletons[0].TrackingState == SkeletonTrackingState.Tracked)
                     {
 
-                        tb_ElbowPos.Text = skel.Joints[JointType.ElbowLeft].Position.X.ToString();
-                        tb_ElbowPos2.Text = skel.Joints[JointType.ElbowLeft].Position.Y.ToString();
+                        float DeltaY = skeletons[0].Joints[JointType.ElbowLeft].Position.Y - skeletons[0].Joints[JointType.ShoulderLeft].Position.Y;
+                        float DeltaX = skeletons[0].Joints[JointType.ElbowLeft].Position.X - skeletons[0].Joints[JointType.ShoulderLeft].Position.X;
+                        double Angle = Math.Atan(DeltaY / DeltaX) * (180 / Math.PI);
+                        int pulse = (int)(Angle * (10)) + 600;
+                        float DeltaYR = skeletons[0].Joints[JointType.ElbowRight].Position.Y - skeletons[0].Joints[JointType.ShoulderRight].Position.Y;
+                        float DeltaXR = skeletons[0].Joints[JointType.ElbowRight].Position.X - skeletons[0].Joints[JointType.ShoulderRight].Position.X;
+                        double AngleR =180+ Math.Atan(DeltaYR / DeltaXR) * (180 / Math.PI);
+                        textBox1.Text = AngleR.ToString();
+                        int pulseR = (int)(AngleR * (10)) + 600;
+                        sport.Write("#4 P"+ pulse + "#9 P"+pulseR + "\r");
                     }
                 }
             }
 
-        }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -162,6 +167,10 @@ namespace SerialPortDotNET
                     //Power Up and Center
                 case Keys.L:
                     sport.Write(str_centerRobot);
+                    break;
+
+                case Keys.Space:
+                    sport.Write("#15 P1500 #14 P1500\r");
                     break;
 
             }
