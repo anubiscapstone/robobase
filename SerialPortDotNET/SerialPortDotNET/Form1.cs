@@ -17,8 +17,8 @@ namespace SerialPortDotNET
         private KinectSensor sensor;
         int BaseVal = 1500;
         public SerialPort sport;
-        public string str_powerOffRobot = "#0L #1L #2L #3L #4L #5L #6L #7L #8L #9L #10L #11L #12L #13L  #14 P1500 #15 P1500\r";
-        public string str_centerRobot = "#0 P1500 #1 P1500 #2 P1500 #3 P1500 #4 P1500 #5 P1500 #6 P1500 #7 P1500 #8 P1500 #9 P1500 #10 P1500 #11 P1500 #12 P1500 #13 P1500 #14 P1500 #15 P1500\r";
+        public const string str_powerOffRobot = "#0L #1L #2L #3L #4L #5L #6L #7L #8L #9L #10L #11L #12L #13L  #14 P1500 #15 P1500\r";
+        public const string str_centerRobot = "#0 P1500 #1 P1500 #2 P1500 #3 P1500 #4 P1500 #5 P1500 #6 P1500 #7 P1500 #8 P1500 #9 P1500 #10 P1500 #11 P1500 #12 P1500 #13 P1500 #14 P1500 #15 P1500\r";
         public Form1()
         {
             InitializeComponent();
@@ -88,20 +88,32 @@ namespace SerialPortDotNET
 
             if (skeletons.Length != 0)
             {
+                try
+                {
                     if (skeletons[0].TrackingState == SkeletonTrackingState.Tracked)
                     {
-
+                        //left arm
                         float DeltaY = skeletons[0].Joints[JointType.ElbowLeft].Position.Y - skeletons[0].Joints[JointType.ShoulderLeft].Position.Y;
                         float DeltaX = skeletons[0].Joints[JointType.ElbowLeft].Position.X - skeletons[0].Joints[JointType.ShoulderLeft].Position.X;
                         double Angle = Math.Atan(DeltaY / DeltaX) * (180 / Math.PI);
                         int pulse = (int)(Angle * (10)) + 600;
+                        //right arm
                         float DeltaYR = skeletons[0].Joints[JointType.ElbowRight].Position.Y - skeletons[0].Joints[JointType.ShoulderRight].Position.Y;
                         float DeltaXR = skeletons[0].Joints[JointType.ElbowRight].Position.X - skeletons[0].Joints[JointType.ShoulderRight].Position.X;
-                        double AngleR =180+ Math.Atan(DeltaYR / DeltaXR) * (180 / Math.PI);
+                        double AngleR = 180 + Math.Atan(DeltaYR / DeltaXR) * (180 / Math.PI);
                         textBox1.Text = AngleR.ToString();
                         int pulseR = (int)(AngleR * (10)) + 600;
-                        sport.Write("#4 P"+ pulse + "#9 P"+pulseR + "\r");
+                        //head
+                        //float headDeltaXR = skeletons[0].Joints[JointType.Head].Position.X - skeletons[0].Joints[JointType.Head].Position.X;
+                        //double AngleHead = 180 + Math.Atan(headDeltaXR) * (180 / Math.PI);
+                        //int pulseHead = (int)(AngleHead * (10)) + 600;
+
+                        sport.Write("#4 P" + pulse + "#9 P" + pulseR + /*"#13 P"+ pulseHead */ "\r");
                     }
+                }
+                catch (Exception ex)
+                {
+                }
                 }
             }
 
@@ -109,12 +121,13 @@ namespace SerialPortDotNET
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             //Power Down Robot and Port
-            sport.Write(str_powerOffRobot);
-            sport.Close();
+            
             if (null != this.sensor)
             {
                 this.sensor.Stop();
             }
+            sport.Write(str_powerOffRobot);
+            sport.Close();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -145,20 +158,20 @@ namespace SerialPortDotNET
 
                     //Tracks Reverse
                 case Keys.S:
-                    sport.Write("#15 P1600 #14 P1400\r");
+                    sport.Write("#15 P2000 #14 P1000\r");
                     break;
 
                     //Tracks Forward
                 case Keys.W:
-                    sport.Write("#15 P1400 #14 P1600\r");
+                    sport.Write("#15 P1000 #14 P2000\r");
                     break;
                     //Tracks Turn Left
                 case Keys.A:
-                    sport.Write("#15 P1400 #14 P1400\r");
+                    sport.Write("#15 P1000 #14 P1000\r");
                     break;
                     //Tracks Turn Right
                 case Keys.D:
-                    sport.Write("#15 P1600 #14 P1600\r");
+                    sport.Write("#15 P2000 #14 P2000\r");
                     break;
                     //Power Down Code
                 case Keys.K:
@@ -169,7 +182,7 @@ namespace SerialPortDotNET
                     sport.Write(str_centerRobot);
                     break;
 
-                case Keys.Space:
+                case Keys.B:
                     sport.Write("#15 P1500 #14 P1500\r");
                     break;
 
