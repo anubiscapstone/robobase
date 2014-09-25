@@ -1,3 +1,13 @@
+/**
+Author:
+Matt Hunter
+Noah Orr
+
+9/24/14
+
+Header file for GPIO intreface library.  Gives access to Sysfs gpio interface.
+**/
+
 #ifndef bbb_gpio
 #define bbb_gpio
 

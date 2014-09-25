@@ -1,3 +1,20 @@
+/**
+Author:
+Matt Hunter
+Noah Orr
+
+9/24/14
+
+GPIO interface library.  Uses Sysfs GPIO API under the hood.
+
+To use: use getInstance to get the GPIO object.  Use GPIO.setup to get a single pin.
+getValue can read an input pin.  setValue sets the output of an output pin.
+When you are done with the pins, you may simply delete the GPIO object.
+
+For more information on the internal workings, search "GPIO sysfs interface".  This is a standard linux system.
+**/
+
+
 #include <fstream>
 #include <string.h>
 #include <stdio.h>

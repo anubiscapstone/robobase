@@ -1,3 +1,15 @@
+/**
+Author:
+Matt Hunter
+Noah Orr
+
+9/24/14
+
+Table of physical pin numbers to GPIO pin numbers.
+Type is defined in gpio.h
+Used by gpio.cpp
+**/
+
 #ifndef bbb_gpio_pintable
 #define bbb_gpio_pintable
 
