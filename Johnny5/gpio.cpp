@@ -32,6 +32,7 @@ GPIO::GPIO() {
 
 GPIO::~GPIO() {
 	clean();
+	instance = 0; // set instance back to NULL as to NOT break getInstance() func
 }
 
 int GPIO::getGpioByKey(const char *key) {
