@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 
+#include <termios.h>
+
 #include "gpio.h"
 #include "serialib.h"
 
