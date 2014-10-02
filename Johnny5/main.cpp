@@ -1,30 +1,19 @@
 #include <iostream>
 #include <string>
 
-#include "gpio.h"
+#include "sock.h"
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
-	// Get Server IP address
-	/*if (argc < 2) {
-		cerr << "Usage: " << argv[0] << " <serverIPaddress>" << endl;
-		return -1;
-	}
-	string serverIP = argv[1];*/
+	Sock s;
+	s.conn("192.168.0.100", "1337");
 
-	// Homegrown GPIO example
-	GPIO *gpio = GPIO::getInstance();
-	int pin = gpio->setup("P9_12", OUTPUT);
+	s.sendline("tacos are my past");
 
-	gpio->setValue(pin, HIGH);
-	cout << "HIGH" << endl;
-	
-	sleep(5);
+	string rec = s.readline();
 
-	gpio->setValue(pin, LOW);
-	cout << "LOW" << endl;
-
-	delete gpio;
+	cout << rec << endl;
+	s.clo();
 	return 0;
 }
