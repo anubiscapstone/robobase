@@ -5,8 +5,13 @@
 #include "sock.h"
 #include "serialib.h"
 
+
 using namespace std;
 
+#ifdef __linux__
+#define DEVICE_PORT "/dev/ttyO4"
+#endif
+ 
 int main(int argc, char *argv[]) {
 
 	Sock s;
@@ -42,3 +47,4 @@ int main(int argc, char *argv[]) {
 	return 0;
 
 }
+
