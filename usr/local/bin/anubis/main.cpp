@@ -1,62 +1,162 @@
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <cstring>
+#include <sstream>
 #include <signal.h>
 #include <unistd.h>
-#include <stdio.h>
-#include <string.h>
-#include <fstream>
-#include <cstdlib>
 
-#include "gpio.h"
-#include "serialib.h"
+#include "anubis.h"
 
 using namespace std;
 
-void registerSigaction();
-void writepid();
-void terminate(int signum);
+const char *pidpath = "/dev/shm/anubispid";
+const char *statpath = "/dev/shm/anubisstatus";
+Anubis *service;
 
-int servo_pin;
+bool serviceIsRunning();
+pid_t getServicePid();
+void putServicePid(pid_t pid);
+void start();
+void stop();
+void status();
+void runService();
+void stopService(int signum);
+void queryService(int signum);
 
 int main(int argc, char *argv[]) {
-	registerSigaction();
-	writepid();
+	if (argc < 2) {
+		cerr << "USAGE: " << argv[0] << " [option]" << endl;
+		cerr << "Options: start, stop, restart, status, service (don't invoke this directly)" << endl;
+		return 1;
+	}
 
-	GPIO *gpio = GPIO::getInstance();
-	servo_pin = gpio->setup("P9_14", OUTPUT);
-	gpio->setValue(servo_pin, HIGH);
+	string mode = argv[1];
 
-	sleep(1);
+	if (mode == "start") {
+		if (serviceIsRunning()) {
+			cerr << "Service is already running" << endl;
+			return 1;
+		}
+		start();
+	}
 
-	const char *iv = "#0 P1500 #1 P1500 #2 P1500 #3 P1500 #4 P1500 #5 P1500 #6 P1500 #7 P1500 #8 P1500 #9 P1500 #10 P1500 #11 P1500 #12 P1500 #13 P1500 #14 P1500 #15 P1500 #16 P1500\r";
+	else if (mode == "stop") {
+		if (!serviceIsRunning()) {
+			cerr << "Service is not running" << endl;
+			return 1;
+		}
+		stop();
+	}
 
-	serialib *ser = new serialib();
-	ser->Open("/dev/ttyO4", 115200);
-	ser->WriteString(iv);
-	ser->Close();
-	delete ser;
+	else if (mode == "restart") {
+		if (!serviceIsRunning()) {
+			cerr << "Service is not running" << endl;
+			return 1;
+		}
+		stop();
+		sleep(2);
+		start();
+	}
 
-	while (1) { }
+	else if (mode == "status") {
+		if (!serviceIsRunning()) {
+			cerr << "Service is not running" << endl;
+			return 1;
+		}
+		status();
+	}
+
+	else if (mode == "service") {
+		runService();
+	}
+
+	else {
+		cerr << "Unrecognized mode: " << mode << endl;
+		return 1;
+	}
+
+	return 0;
 }
 
-void registerSigaction() {
-	struct sigaction action;
-	memset(&action, 0, sizeof(struct sigaction));
-	action.sa_handler = terminate;
-	sigaction(SIGTERM, &action, NULL);
+bool serviceIsRunning() { // returns TRUE if the service process is running
+	return (kill(getServicePid(), 0) == 0); // zero sends NO signal, kill's return value of zero means no errors.
 }
 
-void writepid() {
+pid_t getServicePid() { // get the pid of the service process from /dev/shm
+	pid_t pid;
+	ifstream in;
+	in.open(pidpath);
+	in >> pid;
+	in.close();
+	return pid;
+}
+
+void putServicePid(pid_t pid) { // store the pid of the service process in /dev/shm
 	ofstream out;
-	out.open("/dev/shm/Johnny5pid");
-	out << getpid() << endl;
+	out.open(pidpath);
+	out << pid << endl;
 	out.close();
 }
 
-void terminate(int signum) {
-	GPIO *gpio = GPIO::getInstance();
-	gpio->setValue(servo_pin, LOW);
-	gpio->clean();
+void start() { // start the service process
+	pid_t pid = fork();
+	if (pid == 0) runService(); // child
+	else if (pid > 0) cout << "Started service" << endl; // parent
+	else cerr << "Problem starting service..." << endl; // error
+}
 
-	delete gpio;
-	exit(0);
+void stop() { // stop the service process
+	kill(getServicePid(), 15); // 15 = SIGTERM
+	cout << "Stopped service" << endl;
+}
+
+void status() { // query the service for its current status
+	kill(getServicePid(), 14); // 14 = SIGALRM
+	sleep(2);
+
+	ifstream in;
+	stringstream buff;
+	in.open(statpath);
+	buff << in.rdbuf();
+	in.close();
+
+	cout << buff.str();
+}
+
+void runService() { // call this if you are the service process!
+
+	// Store my pid
+	putServicePid(getpid());
+
+	// setup sigterm handler
+	struct sigaction term;
+	memset(&term, 0, sizeof(struct sigaction));
+	term.sa_handler = stopService;
+	sigaction(SIGTERM, &term, NULL);
+
+	// setup sigalrm handler
+	struct sigaction alrm;
+	memset(&alrm, 0, sizeof(struct sigaction));
+	alrm.sa_handler = queryService;
+	sigaction(SIGALRM, &alrm, NULL);
+
+	// start background service
+	service = new Anubis();
+	service->start();
+
+}
+
+void stopService(int signum) { // sigterm handler
+	service->stop();
+	delete service;
+}
+
+void queryService(int signum) { // sigalrm handler
+	string status = service->getStatus();
+
+	ofstream out;
+	out.open(statpath);
+	out << status;
+	out.close();
 }
