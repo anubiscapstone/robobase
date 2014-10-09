@@ -20,6 +20,10 @@ private:
 	GPIO *gpio;
 	serialib *serial;
 
+	void connToServer();
+	void heloToServer();
+	void acceptServerMsgs();
+
 public:
 	Anubis();
 	~Anubis();

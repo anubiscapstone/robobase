@@ -328,7 +328,7 @@ char serialib::ReadChar(char *pByte,unsigned int TimeOut_ms)
      \return -2 error while reading the byte
      \return -3 MaxNbBytes is reached
   */
-int serialib::ReadStringNoTimeOut(char *String,char FinalChar,unsigned int MaxNbBytes)
+/*int serialib::ReadStringNoTimeOut(char *String,char FinalChar,unsigned int MaxNbBytes)
 {
     unsigned int    NbBytes=0;                                          // Number of bytes read
     char            ret;                                                // Returned value from Read
@@ -347,7 +347,7 @@ int serialib::ReadStringNoTimeOut(char *String,char FinalChar,unsigned int MaxNb
         if (ret<0) return ret;                                          // Error while reading : return the error number
     }
     return -3;                                                          // Buffer is full : return -3
-}
+}*/
 
 /*!
      \brief Read a string from the serial device (with timeout)
@@ -361,7 +361,7 @@ int serialib::ReadStringNoTimeOut(char *String,char FinalChar,unsigned int MaxNb
      \return -2 error while reading the byte
      \return -3 MaxNbBytes is reached
   */
-int serialib::ReadString(char *String,char FinalChar,unsigned int MaxNbBytes,unsigned int TimeOut_ms)
+/*int serialib::ReadString(char *String,char FinalChar,unsigned int MaxNbBytes,unsigned int TimeOut_ms)
 {
     if (TimeOut_ms==0)
         return ReadStringNoTimeOut(String,FinalChar,MaxNbBytes);
@@ -396,7 +396,7 @@ int serialib::ReadString(char *String,char FinalChar,unsigned int MaxNbBytes,uns
         }
     }
     return -3;                                                          // Buffer is full : return -3
-}
+}*/
 
 
 /*!

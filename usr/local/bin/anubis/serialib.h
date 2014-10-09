@@ -92,10 +92,10 @@ public:
     // Write a string
     char    WriteString (const char *String);
     // Read a string (with timeout)
-    int     ReadString  (   char *String,
+    /*int     ReadString  (   char *String,
                             char FinalChar,
                             unsigned int MaxNbBytes,
-                            const unsigned int TimeOut_ms=NULL);
+                            const unsigned int TimeOut_ms=NULL);*/
 
 
 
