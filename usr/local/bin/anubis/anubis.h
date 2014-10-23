@@ -16,6 +16,8 @@ private:
 	int servo_pin;
 	int treds_pin;
 
+	string servo_vector;
+
 	Sock *socket;
 	GPIO *gpio;
 	serialib *serial;
@@ -23,6 +25,7 @@ private:
 	void connToServer();
 	void heloToServer();
 	void acceptServerMsgs();
+	void applyVector(string vec);
 
 public:
 	Anubis();

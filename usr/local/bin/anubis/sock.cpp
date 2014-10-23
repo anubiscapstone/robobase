@@ -47,6 +47,10 @@ void Sock::sendline(char *line) {
 	send(sockid, "\n", 1, 0); // add \n
 }
 
+void Sock::sendline(const char *line) {
+	sendline((char *)line);
+}
+
 string Sock::readline() {
 	ssize_t bytes_received;
 	string line = "";

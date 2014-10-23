@@ -20,6 +20,7 @@ public:
 
 	int conn(char *host, char *port);
 	void sendline(char *line);
+	void sendline(const char *line);
 	string readline();
 	void clo();
 };

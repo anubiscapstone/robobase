@@ -41,6 +41,7 @@ Anubis::Anubis() {
 	connected = false;
 	servo_pin = 0;
 	treds_pin = 0;
+	servo_vector = "";
 
 	// Init obj pointers
 	socket = new Sock();
@@ -76,7 +77,7 @@ void Anubis::start() {
 	/* MAIN LOOP - maintain network connection and do what it says */
 	while (running) {
 		// Reset Hardware
-		serial->WriteString(iv);
+		applyVector(iv);
 		gpio->setValue(treds_pin, LOW);
 
 		// Connect to server
@@ -99,7 +100,7 @@ void Anubis::start() {
 	socket->clo();
 
 	// Send the nv to the robot
-	serial->WriteString(nv);
+	applyVector(nv);
 	serial->Close();
 
 	// Power off motors
@@ -161,12 +162,58 @@ void Anubis::heloToServer() {
 
 void Anubis::acceptServerMsgs() {
 	while (running) {
+
+		// Get server message
 		string line = socket->readline();
+
+		// Lose connection?
 		if (line.size() == 0) {
 			socket->clo();
 			break;
 		}
 
-		serial->WriteString(line.c_str());
+		// Bad request?
+		if (line.size() < 2) {
+			socket->sendline("err");
+			continue;
+		}
+
+		// Get Request code
+		string rqc = line.substr(0, 2);
+
+
+		// Store Vector
+		if (rqc == "sv") {
+			string vec = line.substr(3, line.size() - 3);
+			applyVector(vec);
+		}
+
+		// Ping
+		else if (rqc == "pg") {
+			socket->sendline("pg"); // pong!
+		}
+
+		// Request Vector
+		else if (rqc == "rv") {
+			char *vec_ = new char[servo_vector.size() + 1];
+			strcpy(vec_, servo_vector.c_str());
+			socket->sendline(vec_);
+		}
+
+		// Request Data
+		else if (rqc == "rd") {
+			socket->sendline("nc");
+		}
+
+
+		// Bad Request?
+		else {
+			socket->sendline("err");
+		}
 	}
+}
+
+void Anubis::applyVector(string vec) {
+	servo_vector = vec;
+	serial->WriteString(servo_vector.c_str());
 }
