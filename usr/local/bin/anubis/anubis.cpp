@@ -68,22 +68,16 @@ void Anubis::start() {
 	gpio->setValue(servo_pin, HIGH);
 
 	// Wait for SSC-32 to boot
-	sleep(2);
-
-	// Send the iv to the robot
-	serial->Open(serdev, baud);
-	serial->WriteString(iv);
-
-	// Sanity delay
 	sleep(1);
 
-	// Power on treds
-	gpio->setValue(treds_pin, HIGH);
+	// Open serial port
+	serial->Open(serdev, baud);
 
 	/* MAIN LOOP - maintain network connection and do what it says */
 	while (running) {
-		// Send iv
+		// Reset Hardware
 		serial->WriteString(iv);
+		gpio->setValue(treds_pin, LOW);
 
 		// Connect to server
 		connected = false;
@@ -93,6 +87,9 @@ void Anubis::start() {
 
 		// Identify myself to server
 		heloToServer();
+
+		// Activate Treds
+		gpio->setValue(treds_pin, HIGH);
 
 		// Accept instructions from server
 		acceptServerMsgs();
