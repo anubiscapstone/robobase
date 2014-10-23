@@ -143,6 +143,9 @@ void Anubis::connToServer() {
 
 	do status = socket->conn(host_, port_);
 	while (running && (status != 0));
+
+	delete host_;
+	delete port_;
 }
 
 void Anubis::heloToServer() {
@@ -158,6 +161,8 @@ void Anubis::heloToServer() {
 	strcpy(helo_, helo.c_str());
 
 	socket->sendline(helo_);
+
+	delete helo_;
 }
 
 void Anubis::acceptServerMsgs() {
@@ -198,6 +203,7 @@ void Anubis::acceptServerMsgs() {
 			char *vec_ = new char[servo_vector.size() + 1];
 			strcpy(vec_, servo_vector.c_str());
 			socket->sendline(vec_);
+			delete vec_;
 		}
 
 		// Request Data
