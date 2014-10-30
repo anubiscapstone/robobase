@@ -20,14 +20,16 @@ void putServicePid(pid_t pid);
 void start();
 void stop();
 void status();
+void verbose();
 void runService();
 void stopService(int signum);
 void queryService(int signum);
+void toggleVerbose(int signum);
 
 int main(int argc, char *argv[]) {
 	if (argc < 2) {
 		cerr << "USAGE: " << argv[0] << " [option]" << endl;
-		cerr << "Options: start, stop, restart, status, service (don't invoke this directly)" << endl;
+		cerr << "Options: start, stop, restart, status, verbose, service (don't invoke this directly)" << endl;
 		return 1;
 	}
 
@@ -65,6 +67,14 @@ int main(int argc, char *argv[]) {
 			return 1;
 		}
 		status();
+	}
+
+	else if (mode == "verbose") {
+		if (!serviceIsRunning()) {
+			cerr << "Service is not running" << endl;
+			return 1;
+		}
+		verbose();
 	}
 
 	else if (mode == "service") {
@@ -124,22 +134,32 @@ void status() { // query the service for its current status
 	cout << buff.str();
 }
 
+void verbose() { // toggle verbose output on/off
+	kill(getServicePid(), 2); // 2 = SIGINT
+}
+
 void runService() { // call this if you are the service process!
 
 	// Store my pid
 	putServicePid(getpid());
 
-	// setup sigterm handler
+	// setup sigterm handler (terminate)
 	struct sigaction term;
 	memset(&term, 0, sizeof(struct sigaction));
 	term.sa_handler = stopService;
 	sigaction(SIGTERM, &term, NULL);
 
-	// setup sigalrm handler
+	// setup sigalrm handler (query status)
 	struct sigaction alrm;
 	memset(&alrm, 0, sizeof(struct sigaction));
 	alrm.sa_handler = queryService;
 	sigaction(SIGALRM, &alrm, NULL);
+
+	// setup sigint handler (toggle verbose output)
+	struct sigaction _int;
+	memset(&_int, 0, sizeof(struct sigaction));
+	_int.sa_handler = toggleVerbose;
+	sigaction(SIGINT, &_int, NULL);
 
 	// start background service
 	service = new Anubis();
@@ -159,4 +179,8 @@ void queryService(int signum) { // sigalrm handler
 	out.open(statpath);
 	out << status;
 	out.close();
+}
+
+void toggleVerbose(int signum) { // sigint handler
+	service->toggleVerbose();
 }

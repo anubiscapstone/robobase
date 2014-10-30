@@ -13,6 +13,7 @@ class Anubis {
 private:
 	bool running;
 	bool connected;
+	bool verbose;
 	int servo_pin;
 	int treds_pin;
 
@@ -26,6 +27,7 @@ private:
 	void heloToServer();
 	void acceptServerMsgs();
 	void applyVector(string vec);
+	void broadcast(string message);
 
 public:
 	Anubis();
@@ -34,6 +36,7 @@ public:
 	void start();
 	void stop();
 	string getStatus();
+	void toggleVerbose();
 };
 
 #endif // bbb_anubis

@@ -39,6 +39,7 @@ Anubis::Anubis() {
 	// Init obj vars
 	running = false;
 	connected = false;
+	verbose = false;
 	servo_pin = 0;
 	treds_pin = 0;
 	servo_vector = "";
@@ -120,7 +121,14 @@ string Anubis::getStatus() {
 
 	buff << "Anubis Control Status" << endl;
 	buff << "Running: " << (running ? "TRUE" : "FALSE") << endl;
-	buff << "Connected: " << (connected ? "TRUE" : "FALSE") << endl;
+	buff << "Server: " << (connected ? "CONNECTED" : "DISCONNECTED") << endl;
+
+	bool servos = gpio->getValue(servo_pin) == HIGH;
+	bool treds = gpio->getValue(treds_pin) == HIGH;
+	buff << "Servos: " << (servos ? "ON" : "OFF") << endl;
+	buff << "Treds: " << (treds ? "ON" : "OFF") << endl;
+
+	buff << "Verbose O/P: " << (verbose ? "ON" : "OFF") << endl;
 
 	return buff.str();
 }
@@ -177,6 +185,11 @@ void Anubis::acceptServerMsgs() {
 			break;
 		}
 
+		// Verbose output
+		if (verbose) {
+			broadcast(line);
+		}
+
 		// Bad request?
 		if (line.size() < 2) {
 			socket->sendline("err");
@@ -222,4 +235,15 @@ void Anubis::acceptServerMsgs() {
 void Anubis::applyVector(string vec) {
 	servo_vector = vec;
 	serial->WriteString(servo_vector.c_str());
+}
+
+void Anubis::broadcast(string message) {
+	string cmd = "echo \"";
+	cmd += message;
+	cmd += "\" | wall -n";
+	system(cmd.c_str());
+}
+
+void Anubis::toggleVerbose() {
+	verbose = !verbose;
 }
