@@ -185,10 +185,7 @@ void Anubis::acceptServerMsgs() {
 			break;
 		}
 
-		// Verbose output
-		if (verbose) {
-			broadcast(line);
-		}
+
 
 		// Bad request?
 		if (line.size() < 2) {
@@ -228,6 +225,11 @@ void Anubis::acceptServerMsgs() {
 		// Bad Request?
 		else {
 			socket->sendline("err");
+		}
+
+		// Verbose output
+		if (verbose) {
+			broadcast(line.substr(3, line.size() - 3));
 		}
 	}
 }
