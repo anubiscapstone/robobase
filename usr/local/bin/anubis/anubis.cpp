@@ -14,6 +14,7 @@ turned off.
 When the process ends, this software cleans up all GPIO and serial assets before terminating.
 */
 
+#include <iostream>
 #include <string>
 #include <sstream>
 #include <fstream>
@@ -56,9 +57,6 @@ Anubis::Anubis() {
 }
 
 Anubis::~Anubis() {
-	delete socket;
-	delete gpio;
-	delete serial;
 }
 
 void Anubis::start() {
@@ -151,9 +149,6 @@ void Anubis::connToServer() {
 
 	do status = socket->conn(host_, port_);
 	while (running && (status != 0));
-
-	delete host_;
-	delete port_;
 }
 
 void Anubis::heloToServer() {
@@ -169,8 +164,6 @@ void Anubis::heloToServer() {
 	strcpy(helo_, helo.c_str());
 
 	socket->sendline(helo_);
-
-	delete helo_;
 }
 
 void Anubis::acceptServerMsgs() {
@@ -179,13 +172,14 @@ void Anubis::acceptServerMsgs() {
 		// Get server message
 		string line = socket->readline();
 
+		// verbose
+		if (verbose) cout << "start new line:" << endl;
+
 		// Lose connection?
 		if (line.size() == 0) {
 			socket->clo();
 			break;
 		}
-
-
 
 		// Bad request?
 		if (line.size() < 2) {
@@ -196,11 +190,11 @@ void Anubis::acceptServerMsgs() {
 		// Get Request code
 		string rqc = line.substr(0, 2);
 
-
 		// Store Vector
 		if (rqc == "sv") {
 			string vec = line.substr(3, line.size() - 3);
 			applyVector(vec);
+			if (verbose) cout << vec;
 		}
 
 		// Ping
@@ -213,6 +207,7 @@ void Anubis::acceptServerMsgs() {
 			char *vec_ = new char[servo_vector.size() + 1];
 			strcpy(vec_, servo_vector.c_str());
 			socket->sendline(vec_);
+			cerr << "anubis.cpp | deleting vec_" << endl;
 			delete vec_;
 		}
 
@@ -221,15 +216,9 @@ void Anubis::acceptServerMsgs() {
 			socket->sendline("nc");
 		}
 
-
 		// Bad Request?
 		else {
 			socket->sendline("err");
-		}
-
-		// Verbose output
-		if (verbose) {
-			broadcast(line.substr(3, line.size() - 3));
 		}
 	}
 }
@@ -237,13 +226,6 @@ void Anubis::acceptServerMsgs() {
 void Anubis::applyVector(string vec) {
 	servo_vector = vec;
 	serial->WriteString(servo_vector.c_str());
-}
-
-void Anubis::broadcast(string message) {
-	string cmd = "echo \"";
-	cmd += message;
-	cmd += "\" | wall -n";
-	system(cmd.c_str());
 }
 
 void Anubis::toggleVerbose() {

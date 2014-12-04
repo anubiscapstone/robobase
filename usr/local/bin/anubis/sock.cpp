@@ -61,7 +61,7 @@ string Sock::readline() {
 
 		if (bytes_received <= 0) return "";
 		line += incomming;
-
+		
 		delete[] incomming;
 
 		if (line.find("\n", 0) != string::npos) break;

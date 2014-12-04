@@ -169,7 +169,6 @@ void runService() { // call this if you are the service process!
 
 void stopService(int signum) { // sigterm handler
 	service->stop();
-	delete service;
 }
 
 void queryService(int signum) { // sigalrm handler

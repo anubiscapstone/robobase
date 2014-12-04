@@ -27,7 +27,6 @@ private:
 	void heloToServer();
 	void acceptServerMsgs();
 	void applyVector(string vec);
-	void broadcast(string message);
 
 public:
 	Anubis();
