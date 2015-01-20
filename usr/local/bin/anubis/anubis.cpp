@@ -16,7 +16,6 @@ When the process ends, this software cleans up all GPIO and serial assets before
 
 #include <iostream>
 #include <string>
-#include <sstream>
 #include <fstream>
 
 #include "anubis.h"
@@ -114,21 +113,16 @@ void Anubis::stop() {
 	running = false;
 }
 
-string Anubis::getStatus() {
-	stringstream buff;
-
-	buff << "Anubis Control Status" << endl;
-	buff << "Running: " << (running ? "TRUE" : "FALSE") << endl;
-	buff << "Server: " << (connected ? "CONNECTED" : "DISCONNECTED") << endl;
-
+void Anubis::getStatus() {
 	bool servos = gpio->getValue(servo_pin) == HIGH;
 	bool treds = gpio->getValue(treds_pin) == HIGH;
-	buff << "Servos: " << (servos ? "ON" : "OFF") << endl;
-	buff << "Treds: " << (treds ? "ON" : "OFF") << endl;
 
-	buff << "Verbose O/P: " << (verbose ? "ON" : "OFF") << endl;
-
-	return buff.str();
+	broadcast("Anubis Control Status");
+	broadcast(string("Running: ") + (running ? "RUNNING" : "NOT_RUNNING"));
+	broadcast(string("Server: ") + (connected ? "CONNECTED" : "DISCONNECTED"));
+	broadcast(string("Servos: ") + (servos ? "ON" : "OFF"));
+	broadcast(string("Treds: ") + (treds ? "ON" : "OFF"));
+	broadcast(string("Verbose O/P: ") + (verbose ? "ON" : "OFF"));
 }
 
 void Anubis::connToServer() {
@@ -173,7 +167,7 @@ void Anubis::acceptServerMsgs() {
 		string line = socket->readline();
 
 		// verbose
-		if (verbose) cout << "start new line:" << endl;
+		if (verbose) broadcast("start new line:");
 
 		// Lose connection?
 		if (line.size() == 0) {
@@ -194,7 +188,7 @@ void Anubis::acceptServerMsgs() {
 		if (rqc == "sv") {
 			string vec = line.substr(3, line.size() - 3);
 			applyVector(vec);
-			if (verbose) cout << vec;
+			if (verbose) broadcast(vec);
 		}
 
 		// Ping
@@ -207,7 +201,6 @@ void Anubis::acceptServerMsgs() {
 			char *vec_ = new char[servo_vector.size() + 1];
 			strcpy(vec_, servo_vector.c_str());
 			socket->sendline(vec_);
-			cerr << "anubis.cpp | deleting vec_" << endl;
 			delete vec_;
 		}
 
@@ -230,4 +223,9 @@ void Anubis::applyVector(string vec) {
 
 void Anubis::toggleVerbose() {
 	verbose = !verbose;
+}
+
+void Anubis::broadcast(string message) {
+	string cmd = "printf %s '" + message + "' | wall -n";
+	system(cmd.c_str());
 }

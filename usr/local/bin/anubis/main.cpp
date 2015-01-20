@@ -10,8 +10,8 @@
 
 using namespace std;
 
-const char *pidpath = "/dev/shm/anubispid";
-const char *statpath = "/dev/shm/anubisstatus";
+const char *pidpath = "/dev/shm/anubiscon.pid";
+
 Anubis *service;
 
 bool serviceIsRunning();
@@ -29,7 +29,7 @@ void toggleVerbose(int signum);
 int main(int argc, char *argv[]) {
 	if (argc < 2) {
 		cerr << "USAGE: " << argv[0] << " [option]" << endl;
-		cerr << "Options: start, stop, restart, status, verbose, service (don't invoke this directly)" << endl;
+		cerr << "Options: start, stop, restart, status, verbose" << endl;
 		return 1;
 	}
 
@@ -75,10 +75,6 @@ int main(int argc, char *argv[]) {
 			return 1;
 		}
 		verbose();
-	}
-
-	else if (mode == "service") {
-		runService();
 	}
 
 	else {
@@ -130,14 +126,6 @@ void stop() { // stop the service process
 void status() { // query the service for its current status
 	kill(getServicePid(), 14); // 14 = SIGALRM
 	sleep(2);
-
-	ifstream in;
-	stringstream buff;
-	in.open(statpath);
-	buff << in.rdbuf();
-	in.close();
-
-	cout << buff.str();
 }
 
 void verbose() { // toggle verbose output on/off
@@ -178,12 +166,7 @@ void stopService(int signum) { // sigterm handler
 }
 
 void queryService(int signum) { // sigalrm handler
-	string status = service->getStatus();
-
-	ofstream out;
-	out.open(statpath);
-	out << status;
-	out.close();
+	service->getStatus();
 }
 
 void toggleVerbose(int signum) { // sigint handler

@@ -27,6 +27,7 @@ private:
 	void heloToServer();
 	void acceptServerMsgs();
 	void applyVector(string vec);
+	void broadcast(string message);
 
 public:
 	Anubis();
@@ -34,7 +35,7 @@ public:
 
 	void start();
 	void stop();
-	string getStatus();
+	void getStatus();
 	void toggleVerbose();
 };
 
