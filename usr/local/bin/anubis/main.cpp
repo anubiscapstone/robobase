@@ -90,13 +90,19 @@ int main(int argc, char *argv[]) {
 }
 
 bool serviceIsRunning() { // returns TRUE if the service process is running
-	return (kill(getServicePid(), 0) == 0); // zero sends NO signal, kill's return value of zero means no errors.
+	try {
+		return (kill(getServicePid(), 0) == 0); // zero sends NO signal, kill's return value of zero means no errors.
+	}
+	catch (const int e) {
+		return false;
+	}
 }
 
 pid_t getServicePid() { // get the pid of the service process from /dev/shm
 	pid_t pid;
 	ifstream in;
 	in.open(pidpath);
+	if (!in.good()) throw 1;
 	in >> pid;
 	in.close();
 	return pid;
