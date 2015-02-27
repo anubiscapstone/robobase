@@ -1,0 +1,9 @@
+#! /bin/bash
+
+echo "Compiling /usr/local/bin/anubisVideo/control/*"
+g++ /usr/local/bin/anubisVideo/control/*.cpp -o /usr/local/bin/videocon
+
+echo ""
+
+echo "Restarting Service"
+videocon restart

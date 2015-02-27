@@ -1,0 +1,9 @@
+#! /bin/bash
+
+echo "Compiling /usr/local/bin/anubis/*"
+g++ /usr/local/bin/anubis/*.cpp -o /usr/local/bin/anubiscon
+
+echo ""
+
+echo "Restarting Service"
+anubiscon restart
