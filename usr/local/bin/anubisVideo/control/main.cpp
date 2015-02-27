@@ -1,3 +1,12 @@
+/**
+Author:
+Matt Hunter
+
+2/27/15
+
+Entry-point to Video Control.   Logic in this file is used for process mgmt. and spawns the background process (or kills it, etc.).
+**/
+
 #include <iostream>
 #include <fstream>
 #include <string>
