@@ -420,6 +420,15 @@ int main(int argc, char *argv[])
         global.out[i].run(global.out[i].param.id);
     }
 
+    /* Write pid to /dev/shm */
+    FILE* pidout = fopen("/dev/shm/mjpg_streamer.pid", "w");
+    if (pidout == NULL) {
+        printf("Error writing PID\n");
+        return 1;
+    }
+    fprintf(pidout, "%d\n", getpid());
+    fclose(pidout);
+
     /* wait for signals */
     pause();
 

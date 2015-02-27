@@ -10,12 +10,14 @@
 //#include "model header"
 
 #define PID_PATH "/dev/shm/videocon.pid"
+#define SID_PATH "/dev/shm/mjpg_streamer.pid"
 #define SCRIPT_PATH "/usr/local/bin/anubisVideo/beginstream.sh"
 
 //ModelType* service;
 
 bool serviceIsRunning();
 pid_t getServicePid();
+pid_t getStreamiPid();
 void putServicePid(pid_t pid);
 void start();
 void stop();
@@ -94,6 +96,16 @@ pid_t getServicePid() { // get the pid of the service process from /dev/shm
 	return pid;
 }
 
+pid_t getStreamiPid() { // get the pid of the streaming process from /dev/shm
+	pid_t pid;
+	std::ifstream in;
+	in.open(SID_PATH);
+	if (!in.good()) throw 1;
+	in >> pid;
+	in.close();
+	return pid;
+}
+
 void putServicePid(pid_t pid) { // store the pid of the service process in /dev/shm
 	std::ofstream out;
 	out.open(PID_PATH);
@@ -141,7 +153,7 @@ void runService() { // call this if you are the service process!
 }
 
 void stopService(int signum) { // sigterm handler
-	exit(0);
+	kill(getStreamiPid(), 15); // 15 = SIGTERM
 }
 
 void queryService(int signum) { // sigalrm handler
