@@ -1,3 +1,13 @@
+/**
+Author:
+Matt Hunter
+Noah Orr
+
+2/27/15
+
+Header file for Socket.  Used to connected in TCP to the socket object on the ANUBIS server.
+**/
+
 #ifndef bbb_sock
 #define bbb_sock
 

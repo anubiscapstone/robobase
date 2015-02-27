@@ -1,3 +1,13 @@
+/**
+Author:
+Matt Hunter
+Noah Orr
+
+2/27/15
+
+Header file for ANUBIS control program model.
+**/
+
 #ifndef bbb_anubis
 #define bbb_anubis
 

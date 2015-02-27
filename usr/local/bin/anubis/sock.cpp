@@ -1,3 +1,14 @@
+/**
+Author:
+Matt Hunter
+Noah Orr
+
+2/27/15
+
+Use sockets to communicate between hosts.  These objects can receive instuctions from the ANUBIS server for robot motions and can
+also send back some queries as well.
+**/
+
 #include <cstring>
 #include <sys/socket.h>
 #include <netdb.h>
