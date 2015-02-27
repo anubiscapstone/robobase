@@ -1,9 +1,9 @@
 #! /bin/bash
 
-# auto video stream
-/root/mjpgstream/beginstream.sh
+# Attempt to start the Anubis video streamer
+/usr/local/bin/videocon start &
 
 # Attempt to start the Anubis background Service
-/usr/local/bin/anubiscon start
+/usr/local/bin/anubiscon start &
 
 exit 0
