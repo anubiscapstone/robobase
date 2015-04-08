@@ -17,6 +17,7 @@ When the process ends, this software cleans up all GPIO and serial assets before
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <sstream>
 
 #include "anubis.h"
 #include "sock.h"
@@ -72,8 +73,15 @@ void Anubis::start() {
 	// Open serial port
 	serial->Open(serdev, baud);
 
+	//usleep(1000000);
+	//gpio->setValue(treds_pin, HIGH);
+
 	/* MAIN LOOP - maintain network connection and do what it says */
+int ctr = 600, dir=0;
+int h_ctr = 1500, h_dir=0;
+int t_ctr = 0;
 	while (running) {
+/*
 		// Reset Hardware
 		applyVector(iv);
 		gpio->setValue(treds_pin, LOW);
@@ -92,6 +100,101 @@ void Anubis::start() {
 
 		// Accept instructions from server
 		acceptServerMsgs();
+*/
+
+int a_ctr = 2400 - (ctr - 600);
+
+
+stringstream vec;
+
+// arms
+vec << "#3 P"  <<   ctr << " ";
+vec << "#8 P"  <<   ctr << " ";
+vec << "#12 P" << a_ctr << " ";
+vec << "#7 P"  << a_ctr << " ";
+vec << "#6 P1500"       << " ";
+vec << "#11 P1500"      << " ";
+vec << "#4 P1500"       << " ";
+vec << "#9 P1500"       << " ";
+
+
+// base n' head
+vec << "#0 P"  <<   ctr << " ";
+vec << "#13 P" << a_ctr << " ";
+vec << "#16 P" << h_ctr << " ";
+
+
+switch (t_ctr) {
+case 0:
+case 1:
+case 2:
+	vec << "#14 P1500 ";
+	vec << "#15 P1500 ";
+	break;
+
+case 3:
+	vec << "#14 P1650 ";
+	vec << "#15 P1350 ";
+	break;
+
+case 4:
+case 5:
+case 6:
+        vec << "#14 P1500 ";
+        vec << "#15 P1500 ";
+        break;
+
+case 7:
+        vec << "#14 P1350 ";
+        vec << "#15 P1650 ";
+
+	t_ctr = -1;
+        break;
+}
+
+
+applyVector(vec.str() + "\r");
+//broadcast(vec.str());
+
+
+if (dir == 0) {
+	ctr+=10;
+	if (ctr > 2400) {
+		ctr = 2400;
+		dir = 1;
+
+		t_ctr++;
+	}
+}
+else {
+	ctr-=10;
+	if (ctr < 600) {
+		ctr = 600;
+		dir = 0;
+
+		t_ctr++;
+	}
+}
+
+if (h_dir == 0) {
+	h_ctr +=10;
+	if (h_ctr > 1950) {
+		h_ctr = 1950;
+		h_dir = 1;
+	}
+}
+else {
+	h_ctr -=10;
+	if (h_ctr < 1500) {
+		h_ctr = 1500;
+		h_dir = 0;
+	}
+}
+
+
+usleep(10000);
+
+
 	}
 
 	// Close network socket
