@@ -117,12 +117,12 @@ void Anubis::getStatus() {
 	bool servos = gpio->getValue(servo_pin) == HIGH;
 	bool treds = gpio->getValue(treds_pin) == HIGH;
 
-	broadcast("Anubis Control Status");
-	broadcast(string("Running: ") + (running ? "RUNNING" : "NOT_RUNNING"));
-	broadcast(string("Server: ") + (connected ? "CONNECTED" : "DISCONNECTED"));
-	broadcast(string("Servos: ") + (servos ? "ON" : "OFF"));
-	broadcast(string("Treds: ") + (treds ? "ON" : "OFF"));
-	broadcast(string("Verbose O/P: ") + (verbose ? "ON" : "OFF"));
+	cout << "Anubis Control Status" << endl;
+	cout << string("Running: ") + (running ? "RUNNING" : "NOT_RUNNING") << endl;
+	cout << string("Server: ") + (connected ? "CONNECTED" : "DISCONNECTED") << endl;
+	cout << string("Servos: ") + (servos ? "ON" : "OFF") << endl;
+	cout << string("Treds: ") + (treds ? "ON" : "OFF") << endl;
+	cout << string("Verbose O/P: ") + (verbose ? "ON" : "OFF") << endl;
 }
 
 void Anubis::connToServer() {
@@ -167,7 +167,7 @@ void Anubis::acceptServerMsgs() {
 		string line = socket->readline();
 
 		// verbose
-		if (verbose) broadcast("start new line:");
+		if (verbose) cout << "start new line:" << endl;
 
 		// Lose connection?
 		if (line.size() == 0) {
@@ -188,7 +188,7 @@ void Anubis::acceptServerMsgs() {
 		if (rqc == "sv") {
 			string vec = line.substr(3, line.size() - 3);
 			applyVector(vec);
-			if (verbose) broadcast(vec);
+			if (verbose) cout << vec << endl;
 		}
 
 		// Ping
@@ -223,9 +223,4 @@ void Anubis::applyVector(string vec) {
 
 void Anubis::toggleVerbose() {
 	verbose = !verbose;
-}
-
-void Anubis::broadcast(string message) {
-	string cmd = "printf %s '" + message + "' | wall -n";
-	system(cmd.c_str());
 }
