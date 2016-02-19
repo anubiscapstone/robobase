@@ -35,10 +35,16 @@ int Sock::conn(char *host, char *port) {
 	if (status != 0) return status;
 
 	sockid = socket(host_info_list->ai_family, host_info_list->ai_socktype, host_info_list->ai_protocol);
-	if (sockid == -1) return -1;
+	if (sockid == -1){
+		clo();
+		return -1;
+	}
 
 	status = connect(sockid, host_info_list->ai_addr, host_info_list->ai_addrlen);
-	if (status != 0) return status;
+	if (status != 0){
+		clo();
+		return status;
+	}
 
 	return 0;
 }
